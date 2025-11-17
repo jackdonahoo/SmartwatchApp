@@ -1,25 +1,20 @@
 import React from 'react';
 import {
-  SafeAreaView,
+  View,
   StyleSheet,
   useColorScheme,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import Dashboard from './src/components/Dashboard';
 
-function App(): React.JSX.Element {
+export default function App() {
   const isDarkMode = useColorScheme() === 'dark';
 
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? '#1a1a1a' : '#f5f5f5',
-    flex: 1,
-  };
-
   return (
-    <SafeAreaView style={backgroundStyle}>
+    <View style={[styles.container, { backgroundColor: isDarkMode ? '#1a1a1a' : '#f5f5f5' }]}>
       <StatusBar style={isDarkMode ? 'light' : 'dark'} />
       <Dashboard />
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -28,5 +23,3 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 });
-
-export default App;

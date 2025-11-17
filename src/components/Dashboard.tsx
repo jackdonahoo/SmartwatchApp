@@ -25,9 +25,8 @@ const Dashboard: React.FC = () => {
   useEffect(() => {
     loadWeatherData();
     // Start with simulated data if no device is connected
-    if (!isConnected) {
-      startSimulatedData();
-    }
+    const cleanup = startSimulatedData();
+    return cleanup;
   }, []);
 
   const loadWeatherData = async () => {
@@ -153,6 +152,7 @@ const Dashboard: React.FC = () => {
   return (
     <ScrollView
       style={styles.container}
+      contentContainerStyle={styles.contentContainer}
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
       }>
@@ -209,6 +209,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F5F5F5',
+  },
+  contentContainer: {
+    paddingTop: 50,
+    paddingBottom: 20,
   },
   title: {
     fontSize: 24,
