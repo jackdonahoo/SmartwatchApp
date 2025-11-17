@@ -1,5 +1,4 @@
-import {PermissionsAndroid, Platform} from 'react-native';
-import Geolocation from '@react-native-community/geolocation';
+import * as Location from 'expo-location';
 
 export interface WeatherData {
   temperature: number;
@@ -14,37 +13,22 @@ class WeatherService {
   private readonly API_KEY = 'YOUR_OPENWEATHER_API_KEY'; // Replace with your API key
   private readonly BASE_URL = 'https://api.openweathermap.org/data/2.5/weather';
 
-  async requestLocationPermission(): Promise<boolean> {
-    if (Platform.OS === 'android') {
-      const granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-      );
-      return granted === PermissionsAndroid.RESULTS.GRANTED;
-    }
-    return true; // iOS permissions handled in Info.plist
-  }
-
   async getCurrentLocation(): Promise<{latitude: number; longitude: number}> {
-    const hasPermission = await this.requestLocationPermission();
-    if (!hasPermission) {
-      throw new Error('Location permission not granted');
-    }
+    try {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        throw new Error('Location permission not granted');
+      }
 
-    return new Promise((resolve, reject) => {
-      Geolocation.getCurrentPosition(
-        position => {
-          resolve({
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
-          });
-        },
-        error => {
-          console.error('Location error:', error);
-          reject(error);
-        },
-        {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
-      );
-    });
+      const location = await Location.getCurrentPositionAsync({});
+      return {
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+      };
+    } catch (error) {
+      console.error('Location error:', error);
+      throw error;
+    }
   }
 
   async getWeatherData(): Promise<WeatherData> {

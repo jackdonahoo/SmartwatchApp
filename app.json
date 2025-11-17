@@ -1,4 +1,20 @@
 {
-  "name": "SmartwatchApp",
-  "displayName": "Smartwatch App"
+  "expo": {
+    "name": "Smartwatch App",
+    "slug": "smartwatch-app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.smartwatchapp"
+    },
+    "android": {
+      "package": "com.smartwatchapp"
+    }
+  }
 }

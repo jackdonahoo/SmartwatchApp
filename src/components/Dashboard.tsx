@@ -7,12 +7,11 @@ import {
   Alert,
   RefreshControl,
 } from 'react-native';
-import BluetoothService, {HealthData} from '../services/BluetoothService';
+import BluetoothService, {HealthData, MockDevice} from '../services/BluetoothService';
 import WeatherService, {WeatherData} from '../services/WeatherService';
 import HealthCard from './HealthCard';
 import WeatherCard from './WeatherCard';
 import ConnectionStatus from './ConnectionStatus';
-import {Device} from 'react-native-ble-plx';
 
 const Dashboard: React.FC = () => {
   const [healthData, setHealthData] = useState<HealthData | null>(null);
@@ -64,7 +63,7 @@ const Dashboard: React.FC = () => {
     try {
       setIsScanning(true);
       
-      await BluetoothService.startScanning((device: Device) => {
+      await BluetoothService.startScanning((device: MockDevice) => {
         Alert.alert(
           'Device Found',
           `Found device: ${device.name}. Connect to it?`,
@@ -84,7 +83,7 @@ const Dashboard: React.FC = () => {
     }
   };
 
-  const connectToDevice = async (device: Device) => {
+  const connectToDevice = async (device: MockDevice) => {
     try {
       BluetoothService.stopScanning();
       setIsScanning(false);
