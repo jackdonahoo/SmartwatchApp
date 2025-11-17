@@ -10,7 +10,7 @@ export interface WeatherData {
 }
 
 class WeatherService {
-  private readonly API_KEY = 'YOUR_OPENWEATHER_API_KEY'; // Replace with your API key
+  private readonly API_KEY = '58c1ed165585c8b67cb38f84780d6f44';
   private readonly BASE_URL = 'https://api.openweathermap.org/data/2.5/weather';
 
   async getCurrentLocation(): Promise<{latitude: number; longitude: number}> {
@@ -33,8 +33,8 @@ class WeatherService {
 
   async getWeatherData(): Promise<WeatherData> {
     try {
-      // For demo purposes, we'll use a mock location if geolocation fails
-      let latitude = 37.7749; // San Francisco default
+      // Default to San Francisco if location fails
+      let latitude = 37.7749;
       let longitude = -122.4194;
 
       try {
@@ -42,74 +42,34 @@ class WeatherService {
         latitude = location.latitude;
         longitude = location.longitude;
       } catch (error) {
-        console.warn('Using default location for weather data');
+        console.warn('Using default location (San Francisco) for weather data');
       }
 
-      // Since we don't have a real API key, we'll return mock data
-      // In a real app, you would make this API call:
-      // const response = await fetch(
-      //   `${this.BASE_URL}?lat=${latitude}&lon=${longitude}&appid=${this.API_KEY}&units=metric`
-      // );
-      // const data = await response.json();
+      // Fetch real weather data from OpenWeatherMap API
+      const response = await fetch(
+        `${this.BASE_URL}?lat=${latitude}&lon=${longitude}&appid=${this.API_KEY}&units=metric`
+      );
 
-      // Mock weather data for demonstration
-      const mockWeatherData: WeatherData = {
-        temperature: Math.floor(Math.random() * 30) + 10, // 10-40°C
-        condition: this.getRandomCondition(),
-        humidity: Math.floor(Math.random() * 40) + 40, // 40-80%
-        windSpeed: Math.floor(Math.random() * 20) + 5, // 5-25 km/h
-        location: 'Current Location',
-        icon: this.getWeatherIcon(),
+      if (!response.ok) {
+        throw new Error('Weather API request failed');
+      }
+
+      const data = await response.json();
+
+      return {
+        temperature: Math.round(data.main.temp),
+        condition: data.weather[0].main,
+        humidity: data.main.humidity,
+        windSpeed: Math.round(data.wind.speed * 3.6), // Convert m/s to km/h
+        location: data.name,
+        icon: this.mapWeatherIcon(data.weather[0].icon),
       };
-
-      return mockWeatherData;
     } catch (error) {
       console.error('Weather service error:', error);
       throw error;
     }
   }
 
-  private getRandomCondition(): string {
-    const conditions = [
-      'Sunny',
-      'Partly Cloudy',
-      'Cloudy',
-      'Rainy',
-      'Thunderstorm',
-      'Snow',
-      'Fog',
-    ];
-    return conditions[Math.floor(Math.random() * conditions.length)];
-  }
-
-  private getWeatherIcon(): string {
-    const icons = ['☀️', '⛅', '☁️', '🌧️', '⛈️', '❄️', '🌫️'];
-    return icons[Math.floor(Math.random() * icons.length)];
-  }
-
-  // Method to fetch weather with real API (commented out for demo)
-  /*
-  private async fetchWeatherFromAPI(latitude: number, longitude: number): Promise<WeatherData> {
-    const response = await fetch(
-      `${this.BASE_URL}?lat=${latitude}&lon=${longitude}&appid=${this.API_KEY}&units=metric`
-    );
-    
-    if (!response.ok) {
-      throw new Error('Weather API request failed');
-    }
-    
-    const data = await response.json();
-    
-    return {
-      temperature: Math.round(data.main.temp),
-      condition: data.weather[0].main,
-      humidity: data.main.humidity,
-      windSpeed: Math.round(data.wind.speed * 3.6), // Convert m/s to km/h
-      location: data.name,
-      icon: this.mapWeatherIcon(data.weather[0].icon),
-    };
-  }
-  
   private mapWeatherIcon(iconCode: string): string {
     const iconMap: {[key: string]: string} = {
       '01d': '☀️', '01n': '🌙',
@@ -124,7 +84,6 @@ class WeatherService {
     };
     return iconMap[iconCode] || '☀️';
   }
-  */
 }
 
 export default new WeatherService();
