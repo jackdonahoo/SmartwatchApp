@@ -208,36 +208,45 @@ const Dashboard: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F5F5',
   },
   contentContainer: {
-    paddingTop: 50,
-    paddingBottom: 20,
+    paddingTop: 60,
+    paddingBottom: 30,
   },
   title: {
-    fontSize: 24,
-    fontWeight: 'bold',
+    fontSize: 32,
+    fontWeight: '800',
     textAlign: 'center',
-    marginVertical: 20,
-    color: '#333',
+    marginBottom: 10,
+    color: '#FFFFFF',
+    letterSpacing: 0.5,
   },
   lastUpdateContainer: {
     alignItems: 'center',
     marginVertical: 16,
+    marginHorizontal: 16,
+    padding: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    borderRadius: 12,
   },
   lastUpdateText: {
-    fontSize: 12,
-    color: '#666',
-    fontStyle: 'italic',
+    fontSize: 13,
+    color: '#FFFFFF',
+    fontWeight: '500',
   },
   noDataContainer: {
     alignItems: 'center',
     marginVertical: 40,
+    marginHorizontal: 16,
+    padding: 30,
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    borderRadius: 20,
   },
   noDataText: {
     fontSize: 16,
-    color: '#666',
+    color: '#FFFFFF',
     textAlign: 'center',
+    fontWeight: '500',
   },
 });
 
