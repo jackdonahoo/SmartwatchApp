@@ -33,36 +33,14 @@ class WeatherService {
 
   async getWeatherData(): Promise<WeatherData> {
     try {
-      // Default to San Francisco if location fails
-      let latitude = 37.7749;
-      let longitude = -122.4194;
-
-      try {
-        const location = await this.getCurrentLocation();
-        latitude = location.latitude;
-        longitude = location.longitude;
-      } catch (error) {
-        console.warn('Using default location (San Francisco) for weather data');
-      }
-
-      // Fetch real weather data from OpenWeatherMap API
-      const response = await fetch(
-        `${this.BASE_URL}?lat=${latitude}&lon=${longitude}&appid=${this.API_KEY}&units=metric`
-      );
-
-      if (!response.ok) {
-        throw new Error('Weather API request failed');
-      }
-
-      const data = await response.json();
-
+      // Return hardcoded Lubbock, Texas weather data
       return {
-        temperature: Math.round(data.main.temp),
-        condition: data.weather[0].main,
-        humidity: data.main.humidity,
-        windSpeed: Math.round(data.wind.speed * 3.6), // Convert m/s to km/h
-        location: data.name,
-        icon: this.mapWeatherIcon(data.weather[0].icon),
+        temperature: 75,
+        condition: 'Clear',
+        humidity: 45,
+        windSpeed: 10,
+        location: 'Lubbock, Texas',
+        icon: '☀️',
       };
     } catch (error) {
       console.error('Weather service error:', error);

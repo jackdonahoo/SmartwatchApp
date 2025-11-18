@@ -36,7 +36,7 @@ const WeatherCard: React.FC<WeatherCardProps> = ({weatherData, isLoading}) => {
       
       <View style={styles.temperatureContainer}>
         <Text style={styles.temperature}>{weatherData.temperature}°</Text>
-        <Text style={styles.temperatureUnit}>C</Text>
+        <Text style={styles.temperatureUnit}>F</Text>
       </View>
       
       <View style={styles.detailsContainer}>
@@ -46,7 +46,7 @@ const WeatherCard: React.FC<WeatherCardProps> = ({weatherData, isLoading}) => {
         </View>
         <View style={styles.detailItem}>
           <Text style={styles.detailLabel}>Wind</Text>
-          <Text style={styles.detailValue}>{weatherData.windSpeed} km/h</Text>
+          <Text style={styles.detailValue}>{weatherData.windSpeed} mph</Text>
         </View>
       </View>
     </View>
