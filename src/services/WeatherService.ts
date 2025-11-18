@@ -37,7 +37,7 @@ class WeatherService {
       return {
         temperature: 75,
         condition: 'Clear',
-        humidity: 45,
+        humidity: 23,
         windSpeed: 10,
         location: 'Lubbock, Texas',
         icon: '☀️',
