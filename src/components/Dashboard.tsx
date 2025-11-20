@@ -152,79 +152,99 @@ const Dashboard: React.FC = () => {
     return `${hours}h ago`;
   };
 
-  if (showHistory) {
-    return <HeartRateHistory onBack={() => setShowHistory(false)} />;
-  }
-
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={styles.contentContainer}
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-      }>
-      <Text style={styles.title}>Smartwatch Dashboard</Text>
-      
-      <ConnectionStatus
-        isConnected={isConnected}
-        deviceName={deviceName}
-        isScanning={isScanning}
-        onConnect={handleConnect}
-        onDisconnect={handleDisconnect}
-      />
-
-      <WeatherCard weatherData={weatherData} isLoading={isWeatherLoading} />
-
-      {healthData && (
-        <>
-          <TouchableOpacity onPress={() => setShowHistory(true)} activeOpacity={0.8}>
-            <HealthCard
-              title="Heart Rate"
-              value={healthData.heartRate}
-              unit="BPM"
-              icon="❤️"
-              color="#E74C3C"
-            />
-          </TouchableOpacity>
+    <View style={styles.mainContainer}>
+      {!showHistory ? (
+        <ScrollView
+          style={styles.container}
+          contentContainerStyle={styles.contentContainer}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }>
+          <Text style={styles.title}>Smartwatch Dashboard</Text>
           
-          <TouchableOpacity onPress={() => setShowHistory(true)} style={styles.viewHistoryButton}>
-            <Text style={styles.viewHistoryText}>📊 View Heart Rate History</Text>
-          </TouchableOpacity>
-          
-          <HealthCard
-            title="Steps"
-            value={healthData.steps.toLocaleString()}
-            unit="steps"
-            icon="👟"
-            color="#3498DB"
+          <ConnectionStatus
+            isConnected={isConnected}
+            deviceName={deviceName}
+            isScanning={isScanning}
+            onConnect={handleConnect}
+            onDisconnect={handleDisconnect}
           />
-          
-          <View style={styles.lastUpdateContainer}>
-            <Text style={styles.lastUpdateText}>
-              Last updated: {formatLastUpdate(healthData.timestamp)}
-            </Text>
-          </View>
-        </>
-      )}
 
-      {!healthData && (
-        <View style={styles.noDataContainer}>
-          <Text style={styles.noDataText}>
-            {isConnected ? 'Waiting for health data...' : 'Loading health data...'}
-          </Text>
-        </View>
+          <WeatherCard weatherData={weatherData} isLoading={isWeatherLoading} />
+
+          {healthData && (
+            <>
+              <TouchableOpacity onPress={() => setShowHistory(true)} activeOpacity={0.8}>
+                <HealthCard
+                  title="Heart Rate"
+                  value={healthData.heartRate}
+                  unit="BPM"
+                  icon="❤️"
+                  color="#E74C3C"
+                />
+              </TouchableOpacity>
+              
+              <HealthCard
+                title="Steps"
+                value={healthData.steps.toLocaleString()}
+                unit="steps"
+                icon="👟"
+                color="#3498DB"
+              />
+              
+              <View style={styles.lastUpdateContainer}>
+                <Text style={styles.lastUpdateText}>
+                  Last updated: {formatLastUpdate(healthData.timestamp)}
+                </Text>
+              </View>
+            </>
+          )}
+
+          {!healthData && (
+            <View style={styles.noDataContainer}>
+              <Text style={styles.noDataText}>
+                {isConnected ? 'Waiting for health data...' : 'Loading health data...'}
+              </Text>
+            </View>
+          )}
+        </ScrollView>
+      ) : (
+        <HeartRateHistory onBack={() => setShowHistory(false)} />
       )}
-    </ScrollView>
+      
+      {/* Bottom Navigation */}
+      <View style={styles.bottomNav}>
+        <TouchableOpacity
+          style={[styles.navButton, !showHistory && styles.navButtonActive]}
+          onPress={() => setShowHistory(false)}
+          activeOpacity={0.7}>
+          <Text style={[styles.navIcon, !showHistory && styles.navIconActive]}>🏠</Text>
+          <Text style={[styles.navLabel, !showHistory && styles.navLabelActive]}>Home</Text>
+        </TouchableOpacity>
+        
+        <TouchableOpacity
+          style={[styles.navButton, showHistory && styles.navButtonActive]}
+          onPress={() => setShowHistory(true)}
+          activeOpacity={0.7}>
+          <Text style={[styles.navIcon, showHistory && styles.navIconActive]}>❤️</Text>
+          <Text style={[styles.navLabel, showHistory && styles.navLabelActive]}>Heart Rate</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  mainContainer: {
+    flex: 1,
+  },
   container: {
     flex: 1,
   },
   contentContainer: {
     paddingTop: 60,
-    paddingBottom: 30,
+    paddingBottom: 100, // Extra padding for bottom nav
   },
   title: {
     fontSize: 32,
@@ -261,26 +281,54 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontWeight: '500',
   },
-  viewHistoryButton: {
-    backgroundColor: 'rgba(255, 255, 255, 0.95)',
-    borderRadius: 16,
-    padding: 16,
-    marginHorizontal: 16,
-    marginVertical: 8,
-    alignItems: 'center',
+  bottomNav: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    flexDirection: 'row',
+    backgroundColor: 'rgba(255, 255, 255, 0.98)',
+    paddingBottom: 20,
+    paddingTop: 12,
+    paddingHorizontal: 20,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
-      height: 4,
+      height: -4,
     },
     shadowOpacity: 0.15,
-    shadowRadius: 8,
-    elevation: 5,
+    shadowRadius: 12,
+    elevation: 10,
   },
-  viewHistoryText: {
-    fontSize: 16,
-    fontWeight: '700',
+  navButton: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 10,
+    borderRadius: 16,
+    marginHorizontal: 8,
+  },
+  navButtonActive: {
+    backgroundColor: 'rgba(102, 126, 234, 0.15)',
+  },
+  navIcon: {
+    fontSize: 28,
+    marginBottom: 4,
+    opacity: 0.5,
+  },
+  navIconActive: {
+    opacity: 1,
+  },
+  navLabel: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#6b7280',
+  },
+  navLabelActive: {
     color: '#667eea',
+    fontWeight: '700',
   },
 });
 

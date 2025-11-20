@@ -189,7 +189,7 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     paddingTop: 60,
-    paddingBottom: 30,
+    paddingBottom: 100, // Extra padding for bottom nav
   },
   header: {
     marginBottom: 20,
