@@ -6,12 +6,14 @@ import {
   ScrollView,
   Alert,
   RefreshControl,
+  TouchableOpacity,
 } from 'react-native';
 import BluetoothService, {HealthData, MockDevice} from '../services/BluetoothService';
 import WeatherService, {WeatherData} from '../services/WeatherService';
 import HealthCard from './HealthCard';
 import WeatherCard from './WeatherCard';
 import ConnectionStatus from './ConnectionStatus';
+import HeartRateHistory from './HeartRateHistory';
 
 const Dashboard: React.FC = () => {
   const [healthData, setHealthData] = useState<HealthData | null>(null);
@@ -21,6 +23,7 @@ const Dashboard: React.FC = () => {
   const [isScanning, setIsScanning] = useState(false);
   const [isWeatherLoading, setIsWeatherLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
 
   useEffect(() => {
     loadWeatherData();
@@ -149,6 +152,10 @@ const Dashboard: React.FC = () => {
     return `${hours}h ago`;
   };
 
+  if (showHistory) {
+    return <HeartRateHistory onBack={() => setShowHistory(false)} />;
+  }
+
   return (
     <ScrollView
       style={styles.container}
@@ -170,13 +177,19 @@ const Dashboard: React.FC = () => {
 
       {healthData && (
         <>
-          <HealthCard
-            title="Heart Rate"
-            value={healthData.heartRate}
-            unit="BPM"
-            icon="❤️"
-            color="#E74C3C"
-          />
+          <TouchableOpacity onPress={() => setShowHistory(true)} activeOpacity={0.8}>
+            <HealthCard
+              title="Heart Rate"
+              value={healthData.heartRate}
+              unit="BPM"
+              icon="❤️"
+              color="#E74C3C"
+            />
+          </TouchableOpacity>
+          
+          <TouchableOpacity onPress={() => setShowHistory(true)} style={styles.viewHistoryButton}>
+            <Text style={styles.viewHistoryText}>📊 View Heart Rate History</Text>
+          </TouchableOpacity>
           
           <HealthCard
             title="Steps"
@@ -247,6 +260,27 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     textAlign: 'center',
     fontWeight: '500',
+  },
+  viewHistoryButton: {
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    borderRadius: 16,
+    padding: 16,
+    marginHorizontal: 16,
+    marginVertical: 8,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 5,
+  },
+  viewHistoryText: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#667eea',
   },
 });
 
