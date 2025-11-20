@@ -14,6 +14,7 @@ import HealthCard from './HealthCard';
 import WeatherCard from './WeatherCard';
 import ConnectionStatus from './ConnectionStatus';
 import HeartRateHistory from './HeartRateHistory';
+import StepHistory from './StepHistory';
 
 const Dashboard: React.FC = () => {
   const [healthData, setHealthData] = useState<HealthData | null>(null);
@@ -24,6 +25,7 @@ const Dashboard: React.FC = () => {
   const [isWeatherLoading, setIsWeatherLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
+  const [showStepHistory, setShowStepHistory] = useState(false);
 
   useEffect(() => {
     loadWeatherData();
@@ -152,9 +154,20 @@ const Dashboard: React.FC = () => {
     return `${hours}h ago`;
   };
 
+  const getCurrentPage = () => {
+    if (showHistory) return 'heart';
+    if (showStepHistory) return 'steps';
+    return 'home';
+  };
+
+  const navigateToPage = (page: 'home' | 'heart' | 'steps') => {
+    setShowHistory(page === 'heart');
+    setShowStepHistory(page === 'steps');
+  };
+
   return (
     <View style={styles.mainContainer}>
-      {!showHistory ? (
+      {getCurrentPage() === 'home' && (
         <ScrollView
           style={styles.container}
           contentContainerStyle={styles.contentContainer}
@@ -175,7 +188,7 @@ const Dashboard: React.FC = () => {
 
           {healthData && (
             <>
-              <TouchableOpacity onPress={() => setShowHistory(true)} activeOpacity={0.8}>
+              <TouchableOpacity onPress={() => navigateToPage('heart')} activeOpacity={0.8}>
                 <HealthCard
                   title="Heart Rate"
                   value={healthData.heartRate}
@@ -185,13 +198,15 @@ const Dashboard: React.FC = () => {
                 />
               </TouchableOpacity>
               
-              <HealthCard
-                title="Steps"
-                value={healthData.steps.toLocaleString()}
-                unit="steps"
-                icon="👟"
-                color="#3498DB"
-              />
+              <TouchableOpacity onPress={() => navigateToPage('steps')} activeOpacity={0.8}>
+                <HealthCard
+                  title="Steps"
+                  value={healthData.steps.toLocaleString()}
+                  unit="steps"
+                  icon="👟"
+                  color="#3498DB"
+                />
+              </TouchableOpacity>
               
               <View style={styles.lastUpdateContainer}>
                 <Text style={styles.lastUpdateText}>
@@ -209,26 +224,40 @@ const Dashboard: React.FC = () => {
             </View>
           )}
         </ScrollView>
-      ) : (
-        <HeartRateHistory onBack={() => setShowHistory(false)} />
+      )}
+      
+      {getCurrentPage() === 'heart' && (
+        <HeartRateHistory onBack={() => navigateToPage('home')} />
+      )}
+      
+      {getCurrentPage() === 'steps' && (
+        <StepHistory onBack={() => navigateToPage('home')} />
       )}
       
       {/* Bottom Navigation */}
       <View style={styles.bottomNav}>
         <TouchableOpacity
-          style={[styles.navButton, !showHistory && styles.navButtonActive]}
-          onPress={() => setShowHistory(false)}
+          style={[styles.navButton, getCurrentPage() === 'home' && styles.navButtonActive]}
+          onPress={() => navigateToPage('home')}
           activeOpacity={0.7}>
-          <Text style={[styles.navIcon, !showHistory && styles.navIconActive]}>🏠</Text>
-          <Text style={[styles.navLabel, !showHistory && styles.navLabelActive]}>Home</Text>
+          <Text style={[styles.navIcon, getCurrentPage() === 'home' && styles.navIconActive]}>🏠</Text>
+          <Text style={[styles.navLabel, getCurrentPage() === 'home' && styles.navLabelActive]}>Home</Text>
         </TouchableOpacity>
         
         <TouchableOpacity
-          style={[styles.navButton, showHistory && styles.navButtonActive]}
-          onPress={() => setShowHistory(true)}
+          style={[styles.navButton, getCurrentPage() === 'heart' && styles.navButtonActive]}
+          onPress={() => navigateToPage('heart')}
           activeOpacity={0.7}>
-          <Text style={[styles.navIcon, showHistory && styles.navIconActive]}>❤️</Text>
-          <Text style={[styles.navLabel, showHistory && styles.navLabelActive]}>Heart Rate</Text>
+          <Text style={[styles.navIcon, getCurrentPage() === 'heart' && styles.navIconActive]}>❤️</Text>
+          <Text style={[styles.navLabel, getCurrentPage() === 'heart' && styles.navLabelActive]}>Heart</Text>
+        </TouchableOpacity>
+        
+        <TouchableOpacity
+          style={[styles.navButton, getCurrentPage() === 'steps' && styles.navButtonActive]}
+          onPress={() => navigateToPage('steps')}
+          activeOpacity={0.7}>
+          <Text style={[styles.navIcon, getCurrentPage() === 'steps' && styles.navIconActive]}>👟</Text>
+          <Text style={[styles.navLabel, getCurrentPage() === 'steps' && styles.navLabelActive]}>Steps</Text>
         </TouchableOpacity>
       </View>
     </View>
